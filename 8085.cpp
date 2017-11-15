@@ -129,7 +129,9 @@ int main(int argc, char *argv[2])
                     }
                     f.get(value1,3);
                     f.get(value2,3,'H');
+                   // cout<<" GG "<<value1<<endl;
                     val1 = charToInt(value1);
+                   // cout<<" DD "<<val1<<endl;
                     val2 = charToInt(value2);
                      if(ch1=='P')
                     {
@@ -141,6 +143,7 @@ int main(int argc, char *argv[2])
                     {
                         h = val1;
                         l = val2;
+                        //cout<<" bbbbbbbbbbbbbbbbbbb    "<<h<<"            bbbbbbbbbbbbbbbbbbbbbbbb    "<<l<<endl;
                     }
                     else if(ch1=='B')
                     {
@@ -506,16 +509,96 @@ int main(int argc, char *argv[2])
                      char hexval[5], tempch;
                      int decval, memval;
                      f.get(hexval,5,'H');
-                     //cout<<endl<<hexval<<"   bbb   "<<endl;
-                     decval = charToInt(hexval);
-                     // cout<<endl<<" gg "<<decval<<endl;;
+                     decval = charToInt(hexval); // here this will convert the m/m address which is in hexadecimal into
+
+
                      f.get(tempch); //tempch reads 'H'
                      f.get(tempch); //temch reads comma
                      f>>memval;
+
                      mem[decval] = memval;
                      //cout<<endl<<"varun"<<mem[decval]<<"singhal";
                      validmem[decval] = memval;
                      break;
+
+             case 23: f.get(ch1); //JMP
+                     if(ch1!=' ')
+                     {
+                        cout<<"Syntax Error in line "<<linenum-1;
+                        exit(0);
+                     }
+                     getline(f,tag1,'\n');
+                     linenum = mymap[tag1];
+                     goToLine(f,linenum);
+                     break;
+
+             case 24:
+                    f.get(ch1); //SUB
+                    if(ch1!=' ')
+                    {
+                        cout<<"Syntax Error in line "<<linenum-1;
+                        exit(0);
+                    }
+                    f.get(ch1);
+                    int tesla;
+                    tesla = getRegVal(ch1);
+                    putRegVal('A',a-tesla);
+                    break;
+
+             case 25: f.get(ch1); //ADI
+                      if(ch1!=' ')
+                      {
+                         cout<<"Syntax Error in line "<<linenum-1;
+                         exit(0);
+                      }
+                      f.get(value1,3);
+                      //f.get(value2,3,'H');
+                      val1 = charToInt(value1);
+                      putRegVal('A',a+val1);
+                      break;
+
+
+              case 26: f.get(ch1); //SUI
+                      if(ch1!=' ')
+                      {
+                         cout<<"Syntax Error in line "<<linenum-1;
+                         exit(0);
+                      }
+                      f.get(value1,3);
+                      //f.get(value2,3,'H');
+                      val1 = charToInt(value1);
+                      putRegVal('A',a+val1);
+                      break;
+
+              case 27:
+                       f.get(ch1); //LHLD
+                      if(ch1!=' ')
+                      {
+                         cout<<"Syntax Error in line "<<linenum-1;
+                         exit(0);
+                      }
+                      f.get(value,6,'H');
+                      val = charToInt(value);
+                      l=mem[val];
+                      val++;
+                      h=mem[val];
+                      break;
+
+              case 28:
+                      f.get(ch1); //SHLD
+                      if(ch1!=' ')
+                      {
+                         cout<<"Syntax Error in line "<<linenum-1;
+                         exit(0);
+                      }
+                      f.get(value,6,'H');
+                      val = charToInt(value);
+                      mem[val]=l;
+                      val++;
+                      mem[val]=h;
+                      break;
+
+
 
             default: cout<<"Syntax Error in line "<<linenum-1;
                      exit(0);
@@ -578,6 +661,18 @@ int getIndex(char ch[])
         return(21);
     else if(strcmp(ch,"SET")==0)
         return(22);
+    else if(strcmp(ch,"JMP")==0)
+        return(23);
+    else if(strcmp(ch,"SUB")==0)
+        return(24);
+    else if(strcmp(ch,"ADI")==0)
+        return(25);
+    else if(strcmp(ch,"SUI")==0)
+        return(26);
+    else if(strcmp(ch,"LHLD")==0)
+        return(27);
+    else if(strcmp(ch,"SHLD")==0)
+        return(28);
     else
         return(-1);
 }
@@ -619,7 +714,7 @@ void display()
 {
     int temp[4];
     char temp1[4];
-    cout<<"Memory Map:\n";
+    cout<<"Memory Map:\n\n";
     for(map<int,int>::iterator it=validmem.begin();it!=validmem.end();it++)
     {
         decToHex(it->first,temp);
@@ -656,7 +751,7 @@ void display()
     cout<<"\nRegisters Status:\n";
     cout<<"A="<<chex[0][1]<<chex[0][0]<<"H\nB="<<chex[1][1]<<chex[1][0]<<"H\nC="<<chex[2][1]<<chex[2][0];
     cout<<"H\nD="<<chex[3][1]<<chex[3][0]<<"H\nE="<<chex[4][1]<<chex[4][0]<<"H\nH="<<chex[5][1]<<chex[5][0]<<"H\nL="<<chex[6][1]<<chex[6][0]<<"H\n";
-    cout<<"Flags Status:\n";
+    cout<<"\nFlags Status:\n";
     cout<<"Zero Flag:"<<(int)flags[0]<<"\nCarry Flag:"<<(int)flags[1]<<"\nSign Flag:"<<(int)flags[2]<<"\nOverflow Flag:"<<(int)flags[3];
 }
 
