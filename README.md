@@ -1,5 +1,6 @@
 # 8085-Emulator
-This project is basic implementation of 8085 emulator->
+This project is basic implementation of 8085 emulator.
+
 In this we implement the following commands:-
 1. Load and Store - MOV , MVI , LXI , LDA , STA , LHLD , SHLD , STAX , XCHG
 2. Arithmetic - ADD , ADI , SUB , INR , DCR , INX , DCX , DAD , SUI
