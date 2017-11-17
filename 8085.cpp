@@ -21,6 +21,102 @@ void display();             //display final statuses
 void goToLine(ifstream&,int); //takes file ptr to given line number
 int getRegVal(char); //returns value of register passed
 void putRegVal(char, int); //assigns int value to passed register
+void debuger();
+
+int run=0,step=0,break1=0,print=0,quit=0,max_breakl=0;
+void debuger(){
+    cout<<"\n\n########################################################################################################################################";
+    cout<<"\nDEBUGGER OPTION"<<endl;
+    cout<<"1. break    syntax-> b 'line no'\n";
+    cout<<"2. run      syntax-> r \n";
+    cout<<"3. step     syntax-> s \n";
+    cout<<"4. print    syntax-> p  \n";
+    cout<<"5. quit \n";
+    cout<<"6. help \n";
+    int input;
+    cin>>input;
+    if(input==1){
+        cout<<"\n Enter the line no to set break point -> ";
+        cin>>break1;
+        if(break1>max_breakl || break1<=0){
+            cout<<"\n your entered wrong break point \n";
+            debuger();
+        }
+        else{
+            cout<<"\n you set break point at "<<break1<<"\n";
+        }
+
+    }
+    else if(input==2){
+            cout<<" \n it will run program until its end or breakpoint is encountered \n";
+            run=1;
+            step=0;
+    }
+    else if(input==3){
+            cout<<" \n it will run one instruction at a time \n";
+            run=0;
+            step=1;
+    }
+    else if(input==4){
+            cout<<"\n It prints the value of register or memory location.\n";
+            int ab1=0;
+            cout<<"\n  Enter your choice \n";
+            cout<<"1. for print the value of register \n";
+            cout<<"2. for print the value at memory location \n";
+            cin>>ab1;
+            if(ab1==1){
+                char chh;
+                cout<<"\n  enter the value of register -> ";
+                cin>>chh;
+                if(chh=='A' || chh=='a'){
+                    cout<<" value of register "<<chh<<" is -> "<<a<<"\n";
+                }
+                else if(chh=='B' || chh=='b'){
+                    cout<<" value of register "<<chh<<" is -> "<<b<<"\n";
+                }
+                else if(chh=='C' || chh=='c'){
+                    cout<<" value of register "<<chh<<" is -> "<<c<<"\n";
+                }
+                else if(chh=='D' || chh=='d'){
+                    cout<<" value of register "<<chh<<" is -> "<<d<<"\n";
+                }
+                else if(chh=='H' || chh=='h'){
+                    cout<<" value of register "<<chh<<" is -> "<<h<<"\n";
+                }
+                else if(chh=='L' || chh=='l'){
+                    cout<<" value of register "<<chh<<" is -> "<<l<<"\n";
+                }
+
+            }
+            else if(ab1==2){
+                char chhh[4];
+                int iii;
+                cout<<"\n  enter the value of memory location -> ";
+                for(iii=0 ; iii<4 ; iii++){
+                    cin>>chhh[iii];
+                }
+                iii=charToInt(chhh);
+                iii=validmem[iii];
+                cout<<" value at memory loction "<<chhh[0]<<chhh[1]<<chhh[2]<<chhh[3]<<" is -> "<<iii<<"\n";
+
+            }
+
+         debuger();
+    }
+    else if(input==5){
+        cout<<"\n THANK YOU \n";
+        exit(0);
+    }
+    else if(input==6){
+        cout<<"\n help section \n";
+        debuger();
+    }
+    else {
+        cout<<"\n you enter wrong option\n";
+        debuger();
+    }
+
+}
 
 int main(int argc, char *argv[2])
 {
@@ -66,11 +162,18 @@ int main(int argc, char *argv[2])
         j++;
     }
 
+    max_breakl=linenum;
+    cout<<max_breakl;
+    debuger();
+
+
     //Block to execute program------------------------------------------------------------------------------
+
     f.seekg(0);
     linenum=1;
     while(!f.eof())
     {
+
         for(int j=0;mapvalues[j]!=0;j++)
         {
             if(linenum==mapvalues[j])
@@ -175,9 +278,9 @@ int main(int argc, char *argv[2])
                     f.get(ch1);
                     int temp;
                     temp = getRegVal(ch1);
-                    cout<<endl<<"varun "<<temp<<" singhal";
+
                     putRegVal(ch2,temp);
-                    cout<<" "<<ch2<<" jj  "<<endl;
+                   // cout<<" "<<ch2<<" jj  "<<endl;
                     break;
 
             case 5: f.get(ch1); //INX
@@ -514,10 +617,12 @@ int main(int argc, char *argv[2])
 
                      f.get(tempch); //tempch reads 'H'
                      f.get(tempch); //temch reads comma
-                     f>>memval;
+
+                     f.get(hexval,5,'H');
+                     memval=charToInt(hexval);
 
                      mem[decval] = memval;
-                     //cout<<endl<<"varun"<<mem[decval]<<"singhal";
+
                      validmem[decval] = memval;
                      break;
 
@@ -607,8 +712,34 @@ int main(int argc, char *argv[2])
         f.get(ch3);
         while(ch3!='\n')
         f.get(ch3);
+
+        if(step==1 and run==0){
+            cout<<"\n-------------------------------------------------value after one instruction executed i.e after "<<linenum<<" instruction ---------------------- \n \n";
+            display();
+            debuger();
+        }
+        else if(break1==linenum){
+            cout<<"\n\n\n $$$$$$$$$$$$$$$$----------------  PROGRAM EXECUTED UPTO "<<break1<<" LINE i.e where you set break point----------------$$$$$$$$$$$ \n";
+            display();
+            char yyy;
+            cout<<"\n\n********* OPTION   ********** \n";
+            cout<<"press y continue till end\n";
+            cout<<"press n leave \n";
+            cin>>yyy;
+            if(yyy=='y'){
+                debuger();
+            }
+            else{
+               break;
+            }
+
+        }
+
+
+
     }//end of while
     ahead: f.close();
+    cout<<"\n-----------------------------------------------------------final values-------------------------------------\n";
     display();
     return(0);
 }//end of main()
@@ -726,6 +857,7 @@ void display()
                 temp1[i]=temp[i]+55;
             cout<<temp1[i];
         }
+
         cout<<"H => "<<it->second<<"\n";
     }
 
